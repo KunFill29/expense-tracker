@@ -5,8 +5,8 @@ import './globals.css';
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: 'AI Expense Tracker',
-  description: 'Smart expense tracking with AI-powered insights',
+  title: 'ExpenseAI - Smart Expense Tracking',
+  description: 'Track your expenses, set budgets, and get AI-powered insights to make better financial decisions.',
 };
 
 export default function RootLayout({

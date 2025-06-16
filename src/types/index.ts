@@ -1,16 +1,31 @@
 export interface Expense {
   id: string;
+  title: string;
   amount: number;
-  category: string;
-  description: string;
-  date: Date;
-  createdAt: Date;
-  updatedAt: Date;
+  date: string;
+  category: ExpenseCategory;
+}
+
+export type ExpenseCategory =
+  | "food"
+  | "transportation"
+  | "entertainment"
+  | "utilities"
+  | "shopping"
+  | "health"
+  | "education"
+  | "other";
+
+export interface ExpenseAnalytics {
+  totalExpenses: number;
+  categoryTotals: Record<string, number>;
+  monthlyTotals: Record<string, number>;
+  averageExpense: number;
 }
 
 export interface Budget {
   id: string;
-  category: string;
+  category: ExpenseCategory;
   amount: number;
   spent: number;
   month: string;

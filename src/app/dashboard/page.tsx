@@ -1,162 +1,154 @@
-// src/app/page.tsx
-"use client";
+"use client"
 
-import React, { useState, useEffect } from "react";
-import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { PlusCircle, TrendingUp, Wallet, Target, Calendar, Download, Filter, Settings } from "lucide-react";
-import ExpenseForm from "@/components/expense-form";
-import ExpenseList from "@/components/expense-list";
-import Dashboard from "@/components/dashboard";
-import Modal from "@/components/ui/modal";
-import { Expense, ExpenseCategory } from "@/types";
-import { getExpenses, addExpense, updateExpense, deleteExpense, getSettings, updateSettings, exportExpensesToCSV } from "@/lib/api";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import AIInsights from "@/components/ai-insights";
+import React, { useState, useEffect } from "react"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Button } from "@/components/ui/button"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Calendar, Download, Filter, PlusCircle, Settings } from "lucide-react"
+import Dashboard from "@/components/dashboard"
+import ExpenseList from "@/components/expense-list"
+import ExpenseForm from "@/components/expense-form"
+import Modal from "@/components/ui/modal"
+import { Expense, ExpenseCategory } from "@/types"
+import { getExpenses, addExpense, updateExpense, deleteExpense, getSettings, updateSettings, exportExpensesToCSV } from "@/lib/api"
 
-export default function Home() {
-  const [showForm, setShowForm] = useState(false);
-  const [expenses, setExpenses] = useState<Expense[]>([]);
-  const [budget, setBudget] = useState(2000);
-  const [activeTab, setActiveTab] = useState("overview");
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+export default function DashboardPage() {
+  const [expenses, setExpenses] = useState<Expense[]>([])
+  const [budget, setBudget] = useState(2000)
+  const [showForm, setShowForm] = useState(false)
+  const [activeTab, setActiveTab] = useState("overview")
+  const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
   const [dateRange, setDateRange] = useState({
     start: new Date(new Date().setDate(1)).toISOString().split('T')[0], // First day of current month
     end: new Date().toISOString().split('T')[0], // Today
-  });
+  })
 
   // Load initial data
   useEffect(() => {
     const loadData = async () => {
       try {
-        setIsLoading(true);
-        setError(null);
+        setIsLoading(true)
+        setError(null)
 
         // Load expenses
-        const expensesResponse = await getExpenses();
+        const expensesResponse = await getExpenses()
         if (expensesResponse.error) {
-          throw new Error(expensesResponse.error);
+          throw new Error(expensesResponse.error)
         }
         if (expensesResponse.data) {
-          setExpenses(expensesResponse.data);
+          setExpenses(expensesResponse.data)
         }
 
         // Load settings
-        const settingsResponse = await getSettings();
+        const settingsResponse = await getSettings()
         if (settingsResponse.error) {
-          throw new Error(settingsResponse.error);
+          throw new Error(settingsResponse.error)
         }
         if (settingsResponse.data) {
-          setBudget(settingsResponse.data.budget);
+          setBudget(settingsResponse.data.budget)
         }
       } catch (err) {
-        setError(err instanceof Error ? err.message : "Failed to load data");
+        setError(err instanceof Error ? err.message : "Failed to load data")
       } finally {
-        setIsLoading(false);
+        setIsLoading(false)
       }
-    };
+    }
 
-    loadData();
-  }, []);
+    loadData()
+  }, [])
 
   const addExpenseHandler = async (data: { title: string; amount: number; date: string; category: ExpenseCategory }) => {
     try {
-      setError(null);
-      const response = await addExpense(data);
+      setError(null)
+      const response = await addExpense(data)
       if (response.error) {
-        throw new Error(response.error);
+        throw new Error(response.error)
       }
       if (response.data) {
-        setExpenses(prev => [response.data!, ...prev]);
-        setShowForm(false);
+        setExpenses(prev => [response.data!, ...prev])
+        setShowForm(false)
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to add expense");
+      setError(err instanceof Error ? err.message : "Failed to add expense")
     }
-  };
+  }
 
   const editExpenseHandler = async (updatedExpense: Expense) => {
     try {
-      setError(null);
-      const response = await updateExpense(updatedExpense);
+      setError(null)
+      const response = await updateExpense(updatedExpense)
       if (response.error) {
-        throw new Error(response.error);
+        throw new Error(response.error)
       }
       if (response.data) {
         setExpenses(prev =>
           prev.map(expense =>
             expense.id === updatedExpense.id ? response.data! : expense
           )
-        );
+        )
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to update expense");
+      setError(err instanceof Error ? err.message : "Failed to update expense")
     }
-  };
+  }
 
   const deleteExpenseHandler = async (id: string) => {
     try {
-      setError(null);
-      const response = await deleteExpense(id);
+      setError(null)
+      const response = await deleteExpense(id)
       if (response.error) {
-        throw new Error(response.error);
+        throw new Error(response.error)
       }
-      setExpenses(prev => prev.filter(expense => expense.id !== id));
+      setExpenses(prev => prev.filter(expense => expense.id !== id))
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to delete expense");
+      setError(err instanceof Error ? err.message : "Failed to delete expense")
     }
-  };
+  }
 
   const updateBudgetHandler = async () => {
     try {
-      setError(null);
-      const response = await updateSettings({ budget });
+      setError(null)
+      const response = await updateSettings({ budget })
       if (response.error) {
-        throw new Error(response.error);
+        throw new Error(response.error)
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to update budget");
+      setError(err instanceof Error ? err.message : "Failed to update budget")
     }
-  };
+  }
 
   const exportExpenses = () => {
     try {
-      const csvContent = exportExpensesToCSV(expenses);
-      const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
-      const link = document.createElement("a");
-      const url = URL.createObjectURL(blob);
-      link.setAttribute("href", url);
-      link.setAttribute("download", `expenses-${new Date().toISOString().split('T')[0]}.csv`);
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
+      const csvContent = exportExpensesToCSV(expenses)
+      const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" })
+      const link = document.createElement("a")
+      const url = URL.createObjectURL(blob)
+      link.setAttribute("href", url)
+      link.setAttribute("download", `expenses-${new Date().toISOString().split('T')[0]}.csv`)
+      document.body.appendChild(link)
+      link.click()
+      document.body.removeChild(link)
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to export expenses");
+      setError(err instanceof Error ? err.message : "Failed to export expenses")
     }
-  };
+  }
 
   // Filter expenses by date range
   const filteredExpenses = expenses.filter(expense => {
-    const expenseDate = new Date(expense.date);
-    const startDate = new Date(dateRange.start);
-    const endDate = new Date(dateRange.end);
-    endDate.setHours(23, 59, 59, 999); // Include the entire end date
-    return expenseDate >= startDate && expenseDate <= endDate;
-  });
+    const expenseDate = new Date(expense.date)
+    const startDate = new Date(dateRange.start)
+    const endDate = new Date(dateRange.end)
+    endDate.setHours(23, 59, 59, 999) // Include the entire end date
+    return expenseDate >= startDate && expenseDate <= endDate
+  })
 
   if (isLoading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-400 via-indigo-400 to-purple-400 flex items-center justify-center">
         <div className="text-white text-xl font-semibold">Loading...</div>
       </div>
-    );
+    )
   }
 
   if (error) {
@@ -173,7 +165,7 @@ export default function Home() {
           </Button>
         </div>
       </div>
-    );
+    )
   }
 
   return (
@@ -246,7 +238,6 @@ export default function Home() {
 
           <TabsContent value="overview" className="space-y-6">
             <Dashboard expenses={filteredExpenses} budget={budget} />
-            <AIInsights expenses={filteredExpenses} budget={budget} />
           </TabsContent>
 
           <TabsContent value="expenses" className="space-y-6">
@@ -329,5 +320,5 @@ export default function Home() {
         </Tabs>
       </main>
     </div>
-  );
-}
+  )
+} 
